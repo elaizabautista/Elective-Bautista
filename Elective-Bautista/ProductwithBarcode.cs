@@ -126,6 +126,11 @@ namespace Elective_Bautista
             CashierForm cashier = new CashierForm();
             cashier.Show(); // This pops up the cashier window
         }
+
+        private void ProductwithBarcode_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
 
