@@ -21,6 +21,49 @@ namespace Elective_Bautista
             InitializeComponent();
         }
 
+        // Run this when the Form opens to show your bakery items
+        private void ProductwithBarcode_Load(object sender, EventArgs e)
+        {
+            LoadDataGrid();
+        }
+
+        private void LoadDataGrid()
+        {
+            try
+            {
+                dataGridView1.Rows.Clear();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    string sql = "SELECT BarcodeData, ProductName, Price, Quantity FROM Products";
+                    SqlCommand cmd = new SqlCommand(sql, conn);
+                    conn.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        int stockValue = Convert.ToInt32(reader["Quantity"]);
+                        int rowIndex = dataGridView1.Rows.Add(
+                            reader["BarcodeData"].ToString(),
+                            reader["ProductName"].ToString(),
+                            "₱" + Convert.ToDecimal(reader["Price"]).ToString("N2"),
+                            stockValue.ToString()
+                        );
+
+                        // If stock is less than 5, make the row look like a warning
+                        if (stockValue < 5)
+                        {
+                            dataGridView1.Rows[rowIndex].DefaultCellStyle.ForeColor = Color.Red;
+                            dataGridView1.Rows[rowIndex].Cells[3].Value += " (LOW!)";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading products: " + ex.Message);
+            }
+        }
+
         public void LoadProductDetails(string barcodeToFind)
         {
             using (SqlConnection conn = new SqlConnection(connStr))
@@ -34,17 +77,22 @@ namespace Elective_Bautista
                 {
                     if (reader.Read())
                     {
-                        // 1. Clear UI
                         lstDetails.Items.Clear();
-                        picDessert.Image = null;
-                        picBarcode.Image = null;
 
-                        // 2. Load Text Info
-                        lstDetails.Items.Add("NAME: " + reader["ProductName"].ToString());
-                        lstDetails.Items.Add("PRICE: ₱" + reader["Price"].ToString());
-                        lstDetails.Items.Add("INFO: " + reader["Description"].ToString());
+                        string name = reader["ProductName"].ToString();
+                        string price = reader["Price"].ToString();
+                        string stock = reader["Quantity"].ToString();
+                        string desc = reader["Description"].ToString();
 
-                        // 3. Load Image (No file lock)
+                        lstDetails.Items.Add("NAME: " + name);
+                        lstDetails.Items.Add("PRICE: ₱" + price);
+                        lstDetails.Items.Add("STOCK: " + stock + " pcs");
+                        lstDetails.Items.Add("INFO: " + desc);
+
+                        // FIX: Updated to use 'numQuantity' to match your Update button
+                        numQuantity.Value = decimal.Parse(stock);
+
+                        // Image Loading
                         string path = reader["DessertImagePath"].ToString();
                         if (!string.IsNullOrEmpty(path) && File.Exists(path))
                         {
@@ -55,26 +103,40 @@ namespace Elective_Bautista
                             }
                         }
 
-                        // 4. Generate Barcode (Fixed for Generic BarcodeWriter)
+                        // Barcode Generation
                         var writer = new BarcodeWriter<Bitmap>
                         {
                             Format = BarcodeFormat.CODE_128,
-                            Options = new EncodingOptions
-                            {
-                                Height = 100,
-                                Width = 250,
-                                Margin = 1
-                            },
+                            Options = new EncodingOptions { Height = 100, Width = 250, Margin = 1 },
                             Renderer = new BitmapRenderer()
                         };
-
-                        picBarcode.Image = writer.Write(reader["BarcodeData"].ToString());
-                        picBarcode.SizeMode = PictureBoxSizeMode.Zoom;
+                        picBarcode.Image = writer.Write(barcodeToFind);
                     }
                 }
             }
         }
 
+        private void BtnUpdateStock_Click(object sender, EventArgs e)
+        {
+            if (lstDetails.Items.Count > 0)
+            {
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    // Gets the name from the first line of the ListBox
+                    string currentName = lstDetails.Items[0].ToString().Replace("NAME: ", "");
+
+                    string sql = "UPDATE Products SET Quantity = @qty WHERE ProductName = @name";
+                    SqlCommand cmd = new SqlCommand(sql, conn);
+                    cmd.Parameters.AddWithValue("@qty", (int)numQuantity.Value);
+                    cmd.Parameters.AddWithValue("@name", currentName);
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Stock updated for " + currentName + "!");
+                    LoadDataGrid(); // Refresh the grid to show new stock
+                }
+            }
+        }
         private void button1_Click(object sender, EventArgs e)
         {
             // We tell the engine to find the item with this specific barcode ID
@@ -127,7 +189,31 @@ namespace Elective_Bautista
             cashier.Show(); // This pops up the cashier window
         }
 
-        private void ProductwithBarcode_Load(object sender, EventArgs e)
+
+        private void btnUpdateStock_Click(object sender, EventArgs e)
+        {
+            // This code updates the stock for the item currently being viewed
+            if (lstDetails.Items.Count > 0)
+            {
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    // We get the Name from the listbox to find the right product
+                    // (Or you can store the current barcode in a global variable)
+                    string currentName = lstDetails.Items[0].ToString().Replace("NAME: ", "");
+
+                    string sql = "UPDATE Products SET Quantity = @qty WHERE ProductName = @name";
+                    SqlCommand cmd = new SqlCommand(sql, conn);
+                    cmd.Parameters.AddWithValue("@qty", (int)numQuantity.Value);
+                    cmd.Parameters.AddWithValue("@name", currentName);
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Stock updated for " + currentName + "!");
+                }
+            }
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }

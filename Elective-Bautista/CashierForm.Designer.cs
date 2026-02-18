@@ -37,8 +37,14 @@
             this.label3 = new System.Windows.Forms.Label();
             this.txtScanInput = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
+            this.numQty = new System.Windows.Forms.NumericUpDown();
+            this.colQty = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colSubtotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.label4 = new System.Windows.Forms.Label();
+            this.lblGrandTotal = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numQty)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -51,6 +57,7 @@
             this.label1.Size = new System.Drawing.Size(618, 152);
             this.label1.TabIndex = 4;
             this.label1.Text = "Belle Patisserie";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // label2
             // 
@@ -81,7 +88,9 @@
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ProdName,
-            this.ProdPrice});
+            this.ProdPrice,
+            this.colQty,
+            this.colSubtotal});
             this.dataGridView1.Location = new System.Drawing.Point(6, 21);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 49;
@@ -135,12 +144,54 @@
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // numQty
+            // 
+            this.numQty.Location = new System.Drawing.Point(98, 381);
+            this.numQty.Name = "numQty";
+            this.numQty.Size = new System.Drawing.Size(53, 22);
+            this.numQty.TabIndex = 10;
+            // 
+            // colQty
+            // 
+            this.colQty.HeaderText = "Qty";
+            this.colQty.MinimumWidth = 6;
+            this.colQty.Name = "colQty";
+            this.colQty.Width = 120;
+            // 
+            // colSubtotal
+            // 
+            this.colSubtotal.HeaderText = "Subtotal";
+            this.colSubtotal.MinimumWidth = 6;
+            this.colSubtotal.Name = "colSubtotal";
+            this.colSubtotal.Width = 120;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(171, 383);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(41, 16);
+            this.label4.TabIndex = 11;
+            this.label4.Text = "Total:";
+            // 
+            // lblGrandTotal
+            // 
+            this.lblGrandTotal.AutoSize = true;
+            this.lblGrandTotal.Location = new System.Drawing.Point(218, 383);
+            this.lblGrandTotal.Name = "lblGrandTotal";
+            this.lblGrandTotal.Size = new System.Drawing.Size(44, 16);
+            this.lblGrandTotal.TabIndex = 12;
+            this.lblGrandTotal.Text = "label5";
+            // 
             // CashierForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FloralWhite;
             this.ClientSize = new System.Drawing.Size(1081, 587);
+            this.Controls.Add(this.lblGrandTotal);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.numQty);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.txtScanInput);
             this.Controls.Add(this.label3);
@@ -151,6 +202,7 @@
             this.Text = "CashierForm";
             this.groupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numQty)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -167,5 +219,10 @@
         public System.Windows.Forms.Button button1;
         private System.Windows.Forms.DataGridViewTextBoxColumn ProdName;
         private System.Windows.Forms.DataGridViewTextBoxColumn ProdPrice;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colQty;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colSubtotal;
+        private System.Windows.Forms.NumericUpDown numQty;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lblGrandTotal;
     }
 }

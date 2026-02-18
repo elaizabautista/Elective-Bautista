@@ -19,78 +19,124 @@ namespace Elective_Bautista
         private void SetupDataGridView()
         {
             dataGridView1.Columns.Clear();
-            // These names MUST match the code in ProcessScannedItem
+            // Updated columns to handle Qty and Subtotal
             dataGridView1.Columns.Add("ProdName", "Item Name");
+            dataGridView1.Columns.Add("ProdQty", "Qty");
             dataGridView1.Columns.Add("ProdPrice", "Price");
+            dataGridView1.Columns.Add("ProdSubtotal", "Subtotal"); // Index 3
+
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
-  
+
         private void ProcessScannedItem(string barcode)
         {
             using (SqlConnection conn = new SqlConnection(connStr))
             {
-                // 1. Search for the product assigned to this barcode
-                string sqlSelect = "SELECT ProductName, Price FROM Products WHERE BarcodeData = @code";
+                // 1. Search for the product and get its current stock
+                string sqlSelect = "SELECT ProductName, Price, Quantity FROM Products WHERE BarcodeData = @code";
                 SqlCommand cmdSelect = new SqlCommand(sqlSelect, conn);
                 cmdSelect.Parameters.AddWithValue("@code", barcode);
 
                 conn.Open();
-                SqlDataAdapter adapter = new SqlDataAdapter(cmdSelect);
-                DataTable dt = new DataTable();
-                adapter.Fill(dt);
+                SqlDataReader reader = cmdSelect.ExecuteReader();
 
-                if (dt.Rows.Count > 0)
+                if (reader.Read())
                 {
-                    // Data found! Extract name and price
-                    string name = dt.Rows[0]["ProductName"].ToString();
-                    decimal price = Convert.ToDecimal(dt.Rows[0]["Price"]);
+                    string name = reader["ProductName"].ToString();
+                    decimal price = Convert.ToDecimal(reader["Price"]);
+                    int currentInventory = Convert.ToInt32(reader["Quantity"]); // Stock from Product Form
 
-                    // 2. DISPLAY: Add to the pink DataGridView
-                    dataGridView1.Rows.Add(name, "₱" + price.ToString("N2"));
+                    // 2. Get the amount the customer wants to buy from your NumericUpDown
+                    int qtyToBuy = (int)numQty.Value;
 
-                    // 3. AUTO-SAVE: Insert into ScannedItems history table
-                    string sqlSave = "INSERT INTO ScannedItems (BarcodeData, ProductName, Price, ScanTime) " +
-                                     "VALUES (@code, @name, @price, GETDATE())";
+                    // 3. Check if you have enough in the kitchen
+                    if (currentInventory < qtyToBuy)
+                    {
+                        MessageBox.Show($"Not enough stock! You only have {currentInventory} left.", "Inventory Warning");
+                        reader.Close();
+                        return;
+                    }
+                    reader.Close(); // Close reader to allow the Update command to run
+
+                    // 4. MATH: Calculate Subtotal
+                    decimal subtotal = price * qtyToBuy;
+
+                    // 5. UPDATE INVENTORY: Subtract the bought quantity from the Products table
+                    string sqlUpdate = "UPDATE Products SET Quantity = Quantity - @qty WHERE BarcodeData = @code";
+                    SqlCommand cmdUpdate = new SqlCommand(sqlUpdate, conn);
+                    cmdUpdate.Parameters.AddWithValue("@qty", qtyToBuy);
+                    cmdUpdate.Parameters.AddWithValue("@code", barcode);
+                    cmdUpdate.ExecuteNonQuery();
+
+                    // 6. RECORD SALE: Save the transaction to ScannedItems
+                    string sqlSave = "INSERT INTO ScannedItems (BarcodeData, ProductName, Price, Quantity, TotalPrice, ScanTime) " +
+                                     "VALUES (@code, @name, @price, @qty, @total, GETDATE())";
 
                     SqlCommand cmdSave = new SqlCommand(sqlSave, conn);
                     cmdSave.Parameters.AddWithValue("@code", barcode);
                     cmdSave.Parameters.AddWithValue("@name", name);
                     cmdSave.Parameters.AddWithValue("@price", price);
-
+                    cmdSave.Parameters.AddWithValue("@qty", qtyToBuy); // Sending the quantity bought
+                    cmdSave.Parameters.AddWithValue("@total", subtotal); // Sending the subtotal
                     cmdSave.ExecuteNonQuery();
+
+                    // 7. UI UPDATE: Add to the DataGridView
+                    dataGridView1.Rows.Add(name, qtyToBuy, "₱" + price.ToString("N2"), "₱" + subtotal.ToString("N2"));
+
+                    // 8. TOTALS: Update the Grand Total label
+                    UpdateGrandTotal();
+
+                    // Reset for next scan
+                    numQty.Value = 1;
                 }
                 else
                 {
-                    // If the ID isn't in your Products table
-                    MessageBox.Show("ID '" + barcode + "' is not assigned to any product!");
+                    MessageBox.Show("Product ID not found!");
                 }
             }
         }
 
+        private void UpdateGrandTotal()
+        {
+            decimal grandTotal = 0;
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                if (row.Cells[3].Value != null)
+                {
+                    // Remove the ₱ sign before converting back to decimal for math
+                    string val = row.Cells[3].Value.ToString().Replace("₱", "");
+                    grandTotal += Convert.ToDecimal(val);
+                }
+            }
+            // Displays in your total label (make sure you have lblGrandTotal)
+            lblGrandTotal.Text = "TOTAL: ₱" + grandTotal.ToString("N2");
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
-            // The "Save and Next" button clears the grid for the next customer
             dataGridView1.Rows.Clear();
+            lblGrandTotal.Text = "TOTAL: ₱0.00";
             txtScanInput.Focus();
         }
 
         private void txtScanInput_KeyDown_1(object sender, KeyEventArgs e)
         {
-            // Checks if the 'Enter' key was pressed (sent by your phone)
             if (e.KeyCode == Keys.Enter)
             {
                 string scannedID = txtScanInput.Text.Trim();
-
                 if (!string.IsNullOrEmpty(scannedID))
                 {
-                    // This runs your search and save logic
                     ProcessScannedItem(scannedID);
                 }
-
-                txtScanInput.Clear(); // Clears for the next scan
-                txtScanInput.Focus(); // Keeps the cursor ready
-                e.SuppressKeyPress = true; // Stops the 'beep' sound
+                txtScanInput.Clear();
+                txtScanInput.Focus();
+                e.SuppressKeyPress = true;
             }
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
