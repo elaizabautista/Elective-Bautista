@@ -8,6 +8,8 @@ using ZXing.Common;
 using ZXing.Rendering;
 using ZXing.Windows.Compatibility;
 using BitmapRenderer = ZXing.Rendering.BitmapRenderer;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Elective_Bautista
 {

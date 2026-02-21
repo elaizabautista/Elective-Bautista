@@ -61,6 +61,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BarcodeScanner2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BarcodeScanner2.Designer.cs">
+      <DependentUpon>BarcodeScanner2.cs</DependentUpon>
+    </Compile>
     <Compile Include="CashierForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -81,6 +87,9 @@
     <Compile Include="WelcomePageBakery.Designer.cs">
       <DependentUpon>WelcomePageBakery.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="BarcodeScanner2.resx">
+      <DependentUpon>BarcodeScanner2.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CashierForm.resx">
       <DependentUpon>CashierForm.cs</DependentUpon>
     </EmbeddedResource>
