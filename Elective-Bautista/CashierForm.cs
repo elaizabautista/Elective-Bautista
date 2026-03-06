@@ -8,7 +8,7 @@ namespace Elective_Bautista
 {
     public partial class CashierForm : Form
     {
-        // Your Connection String
+        //Connection String
         string connStr = @"Data Source=LAPTOP-0DMT6OS6\SQLEXPRESS2;Initial Catalog=BakeryDB;Integrated Security=True";
 
         public CashierForm()
@@ -20,7 +20,6 @@ namespace Elective_Bautista
         private void SetupDataGridView()
         {
             dataGridView1.Columns.Clear();
-            // Updated columns to handle Qty and Subtotal
             dataGridView1.Columns.Add("ProdName", "Item Name");
             dataGridView1.Columns.Add("ProdQty", "Qty");
             dataGridView1.Columns.Add("ProdPrice", "Price");
@@ -33,7 +32,7 @@ namespace Elective_Bautista
         {
             using (SqlConnection conn = new SqlConnection(connStr))
             {
-                // 1. Search for the product and get its current stock
+                //Search for the product and get its current stock
                 string sqlSelect = "SELECT ProductName, Price, Quantity FROM Products WHERE BarcodeData = @code";
                 SqlCommand cmdSelect = new SqlCommand(sqlSelect, conn);
                 cmdSelect.Parameters.AddWithValue("@code", barcode);
@@ -47,10 +46,10 @@ namespace Elective_Bautista
                     decimal price = Convert.ToDecimal(reader["Price"]);
                     int currentInventory = Convert.ToInt32(reader["Quantity"]); // Stock from Product Form
 
-                    // 2. Get the amount the customer wants to buy from your NumericUpDown
+                    //Get the amount the customer wants to buy from your NumericUpDown
                     int qtyToBuy = (int)numQty.Value;
 
-                    // 3. Check if you have enough in the kitchen
+                    // Check if there's enough stock to fulfill the purchase
                     if (currentInventory < qtyToBuy)
                     {
                         MessageBox.Show($"Not enough stock! You only have {currentInventory} left.", "Inventory Warning");
@@ -59,19 +58,19 @@ namespace Elective_Bautista
                     }
                     reader.Close(); // Close reader to allow the Update command to run
 
-                    // 4. MATH: Calculate Subtotal
+                    //Calculate Subtotal
                     decimal subtotal = price * qtyToBuy;
 
-                    // 5. UPDATE INVENTORY: Subtract the bought quantity from the Products table
+                    //Update Inverntory
                     string sqlUpdate = "UPDATE Products SET Quantity = Quantity - @qty WHERE BarcodeData = @code";
                     SqlCommand cmdUpdate = new SqlCommand(sqlUpdate, conn);
                     cmdUpdate.Parameters.AddWithValue("@qty", qtyToBuy);
                     cmdUpdate.Parameters.AddWithValue("@code", barcode);
                     cmdUpdate.ExecuteNonQuery();
 
-                    // 6. RECORD SALE: Save the transaction to ScannedItems
-                    string sqlSave = "INSERT INTO ScannedItems (BarcodeData, ProductName, Price, Quantity, TotalPrice, ScanTime) " +
-                                     "VALUES (@code, @name, @price, @qty, @total, GETDATE())";
+                    //Save the transaction to ScannedItems
+                    string sqlSave = "INSERT INTO SalesLog (BarcodeData, ProductName, Price, Quantity, TotalPrice, ScanTime) " +
+                 "VALUES (@code, @name, @price, @qty, @total, GETDATE())";
 
                     SqlCommand cmdSave = new SqlCommand(sqlSave, conn);
                     cmdSave.Parameters.AddWithValue("@code", barcode);
@@ -81,13 +80,13 @@ namespace Elective_Bautista
                     cmdSave.Parameters.AddWithValue("@total", subtotal); // Sending the subtotal
                     cmdSave.ExecuteNonQuery();
 
-                    // 7. UI UPDATE: Add to the DataGridView
+                    // Add to the DataGridView
                     dataGridView1.Rows.Add(name, qtyToBuy, "₱" + price.ToString("N2"), "₱" + subtotal.ToString("N2"));
 
-                    // 8. TOTALS: Update the Grand Total label
+                    //Update the Grand Total label
                     UpdateGrandTotal();
 
-                    // Reset for next scan
+                    //Reset for next scan
                     numQty.Value = 1;
                 }
                 else
@@ -110,28 +109,27 @@ namespace Elective_Bautista
             }
             lblGrandTotal.Text = "TOTAL: ₱" + grandTotal.ToString("N2");
 
-            CalculateChange(); // Add this line here!
+            CalculateChange(); 
         }
 
         private void CalculateChange()
         {
             try
             {
-                // 1. Get Total from lblGrandTotal (removing the ₱ and 'TOTAL: ' text)
+                // Get Total from lblGrandTotal
                 string totalText = lblGrandTotal.Text.Replace("TOTAL: ₱", "").Trim();
                 decimal total = decimal.Parse(totalText);
 
-                // 2. Get Cash from txtCashReceived
+                // Get Cash from txtCashReceived
                 decimal cash = 0;
                 if (!string.IsNullOrWhiteSpace(txtCashReceived.Text))
                 {
                     cash = decimal.Parse(txtCashReceived.Text);
                 }
 
-                // 3. MATH: Change = Cash - Total
                 decimal change = cash - total;
 
-                // 4. Update the Change Label
+                //Update the Change Label
                 if (change < 0)
                 {
                     lblChange.Text = "CHANGE: ₱0.00 (Incomplete)";
@@ -191,6 +189,15 @@ namespace Elective_Bautista
         private void txtCashReceived_TextChanged(object sender, EventArgs e)
         {
             CalculateChange();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            //Create an instance of your new Sales Report form
+            SalesReport report = new SalesReport();
+
+            // Show the form
+            report.Show(); 
         }
     }
 }

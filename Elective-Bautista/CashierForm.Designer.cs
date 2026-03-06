@@ -46,6 +46,7 @@
             this.lblChange = new System.Windows.Forms.Label();
             this.txtCashReceived = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
+            this.button2 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numQty)).BeginInit();
@@ -223,12 +224,24 @@
             this.label7.TabIndex = 16;
             this.label7.Text = "Cash Received:";
             // 
+            // button2
+            // 
+            this.button2.BackColor = System.Drawing.Color.LavenderBlush;
+            this.button2.Location = new System.Drawing.Point(173, 381);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(176, 34);
+            this.button2.TabIndex = 17;
+            this.button2.Text = "Sales Report Form";
+            this.button2.UseVisualStyleBackColor = false;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // CashierForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FloralWhite;
             this.ClientSize = new System.Drawing.Size(1081, 587);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.txtCashReceived);
             this.Controls.Add(this.lblChange);
@@ -262,16 +275,17 @@
         public System.Windows.Forms.Label label3;
         public System.Windows.Forms.TextBox txtScanInput;
         public System.Windows.Forms.Button button1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ProdName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ProdPrice;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colQty;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colSubtotal;
-        private System.Windows.Forms.NumericUpDown numQty;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label lblGrandTotal;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label lblChange;
-        private System.Windows.Forms.TextBox txtCashReceived;
-        private System.Windows.Forms.Label label7;
+        public System.Windows.Forms.Button button2;
+        public System.Windows.Forms.DataGridViewTextBoxColumn ProdName;
+        public System.Windows.Forms.DataGridViewTextBoxColumn ProdPrice;
+        public System.Windows.Forms.DataGridViewTextBoxColumn colQty;
+        public System.Windows.Forms.DataGridViewTextBoxColumn colSubtotal;
+        public System.Windows.Forms.NumericUpDown numQty;
+        public System.Windows.Forms.Label label4;
+        public System.Windows.Forms.Label lblGrandTotal;
+        public System.Windows.Forms.Label label5;
+        public System.Windows.Forms.Label lblChange;
+        public System.Windows.Forms.TextBox txtCashReceived;
+        public System.Windows.Forms.Label label7;
     }
 }

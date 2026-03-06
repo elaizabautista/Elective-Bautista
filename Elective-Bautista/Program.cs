@@ -16,7 +16,7 @@ namespace Elective_Bautista
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new BarcodeScanner2());
+            Application.Run(new WelcomePageBakery());
         }
     }
 }

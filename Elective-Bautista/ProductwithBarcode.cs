@@ -15,7 +15,7 @@ namespace Elective_Bautista
 {
     public partial class ProductwithBarcode : Form
     {
-        // 1. Setup your Connection String
+        //Connection String
         string connStr = @"Data Source=LAPTOP-0DMT6OS6\SQLEXPRESS2;Initial Catalog=BakeryDB;Integrated Security=True";
 
         public ProductwithBarcode()
@@ -23,7 +23,7 @@ namespace Elective_Bautista
             InitializeComponent();
         }
 
-        // Run this when the Form opens to show your bakery items
+        // Run this when the Form opens to show bakery items
         private void ProductwithBarcode_Load(object sender, EventArgs e)
         {
             LoadDataGrid();
@@ -91,7 +91,6 @@ namespace Elective_Bautista
                         lstDetails.Items.Add("STOCK: " + stock + " pcs");
                         lstDetails.Items.Add("INFO: " + desc);
 
-                        // FIX: Updated to use 'numQuantity' to match your Update button
                         numQuantity.Value = decimal.Parse(stock);
 
                         // Image Loading
@@ -200,7 +199,7 @@ namespace Elective_Bautista
                 using (SqlConnection conn = new SqlConnection(connStr))
                 {
                     // We get the Name from the listbox to find the right product
-                    // (Or you can store the current barcode in a global variable)
+ 
                     string currentName = lstDetails.Items[0].ToString().Replace("NAME: ", "");
 
                     string sql = "UPDATE Products SET Quantity = @qty WHERE ProductName = @name";
