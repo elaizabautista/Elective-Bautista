@@ -34,14 +34,18 @@
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.ProdName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ProdPrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colQty = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colSubtotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label3 = new System.Windows.Forms.Label();
             this.txtScanInput = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.numQty = new System.Windows.Forms.NumericUpDown();
-            this.colQty = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colSubtotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label4 = new System.Windows.Forms.Label();
             this.lblGrandTotal = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.lblChange = new System.Windows.Forms.Label();
+            this.txtCashReceived = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numQty)).BeginInit();
@@ -65,7 +69,7 @@
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Monotype Corsiva", 28.17391F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.PaleVioletRed;
-            this.label2.Location = new System.Drawing.Point(523, 143);
+            this.label2.Location = new System.Drawing.Point(533, 135);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(297, 54);
             this.label2.TabIndex = 5;
@@ -112,6 +116,20 @@
             this.ProdPrice.Name = "ProdPrice";
             this.ProdPrice.Width = 120;
             // 
+            // colQty
+            // 
+            this.colQty.HeaderText = "Qty";
+            this.colQty.MinimumWidth = 6;
+            this.colQty.Name = "colQty";
+            this.colQty.Width = 120;
+            // 
+            // colSubtotal
+            // 
+            this.colSubtotal.HeaderText = "Subtotal";
+            this.colSubtotal.MinimumWidth = 6;
+            this.colSubtotal.Name = "colSubtotal";
+            this.colSubtotal.Width = 120;
+            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -135,7 +153,7 @@
             // 
             // button1
             // 
-            this.button1.BackColor = System.Drawing.Color.Cornsilk;
+            this.button1.BackColor = System.Drawing.Color.AliceBlue;
             this.button1.Location = new System.Drawing.Point(98, 318);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(251, 44);
@@ -151,24 +169,10 @@
             this.numQty.Size = new System.Drawing.Size(53, 22);
             this.numQty.TabIndex = 10;
             // 
-            // colQty
-            // 
-            this.colQty.HeaderText = "Qty";
-            this.colQty.MinimumWidth = 6;
-            this.colQty.Name = "colQty";
-            this.colQty.Width = 120;
-            // 
-            // colSubtotal
-            // 
-            this.colSubtotal.HeaderText = "Subtotal";
-            this.colSubtotal.MinimumWidth = 6;
-            this.colSubtotal.Name = "colSubtotal";
-            this.colSubtotal.Width = 120;
-            // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(171, 383);
+            this.label4.Location = new System.Drawing.Point(97, 488);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(41, 16);
             this.label4.TabIndex = 11;
@@ -177,11 +181,47 @@
             // lblGrandTotal
             // 
             this.lblGrandTotal.AutoSize = true;
-            this.lblGrandTotal.Location = new System.Drawing.Point(218, 383);
+            this.lblGrandTotal.Location = new System.Drawing.Point(203, 488);
             this.lblGrandTotal.Name = "lblGrandTotal";
             this.lblGrandTotal.Size = new System.Drawing.Size(44, 16);
             this.lblGrandTotal.TabIndex = 12;
             this.lblGrandTotal.Text = "label5";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(97, 514);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(54, 16);
+            this.label5.TabIndex = 13;
+            this.label5.Text = "Change";
+            this.label5.Click += new System.EventHandler(this.label5_Click);
+            // 
+            // lblChange
+            // 
+            this.lblChange.AutoSize = true;
+            this.lblChange.Location = new System.Drawing.Point(203, 514);
+            this.lblChange.Name = "lblChange";
+            this.lblChange.Size = new System.Drawing.Size(68, 16);
+            this.lblChange.TabIndex = 14;
+            this.lblChange.Text = "lblChange";
+            // 
+            // txtCashReceived
+            // 
+            this.txtCashReceived.Location = new System.Drawing.Point(206, 451);
+            this.txtCashReceived.Name = "txtCashReceived";
+            this.txtCashReceived.Size = new System.Drawing.Size(111, 22);
+            this.txtCashReceived.TabIndex = 15;
+            this.txtCashReceived.TextChanged += new System.EventHandler(this.txtCashReceived_TextChanged);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(97, 454);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(103, 16);
+            this.label7.TabIndex = 16;
+            this.label7.Text = "Cash Received:";
             // 
             // CashierForm
             // 
@@ -189,6 +229,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FloralWhite;
             this.ClientSize = new System.Drawing.Size(1081, 587);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.txtCashReceived);
+            this.Controls.Add(this.lblChange);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.lblGrandTotal);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.numQty);
@@ -200,6 +244,7 @@
             this.Controls.Add(this.label1);
             this.Name = "CashierForm";
             this.Text = "CashierForm";
+            this.Load += new System.EventHandler(this.CashierForm_Load);
             this.groupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numQty)).EndInit();
@@ -224,5 +269,9 @@
         private System.Windows.Forms.NumericUpDown numQty;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label lblGrandTotal;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label lblChange;
+        private System.Windows.Forms.TextBox txtCashReceived;
+        private System.Windows.Forms.Label label7;
     }
 }

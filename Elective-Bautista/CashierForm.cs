@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Elective_Bautista
@@ -103,19 +104,57 @@ namespace Elective_Bautista
             {
                 if (row.Cells[3].Value != null)
                 {
-                    // Remove the ₱ sign before converting back to decimal for math
                     string val = row.Cells[3].Value.ToString().Replace("₱", "");
                     grandTotal += Convert.ToDecimal(val);
                 }
             }
-            // Displays in your total label (make sure you have lblGrandTotal)
             lblGrandTotal.Text = "TOTAL: ₱" + grandTotal.ToString("N2");
+
+            CalculateChange(); // Add this line here!
+        }
+
+        private void CalculateChange()
+        {
+            try
+            {
+                // 1. Get Total from lblGrandTotal (removing the ₱ and 'TOTAL: ' text)
+                string totalText = lblGrandTotal.Text.Replace("TOTAL: ₱", "").Trim();
+                decimal total = decimal.Parse(totalText);
+
+                // 2. Get Cash from txtCashReceived
+                decimal cash = 0;
+                if (!string.IsNullOrWhiteSpace(txtCashReceived.Text))
+                {
+                    cash = decimal.Parse(txtCashReceived.Text);
+                }
+
+                // 3. MATH: Change = Cash - Total
+                decimal change = cash - total;
+
+                // 4. Update the Change Label
+                if (change < 0)
+                {
+                    lblChange.Text = "CHANGE: ₱0.00 (Incomplete)";
+                    lblChange.ForeColor = Color.Red; // Warning color
+                }
+                else
+                {
+                    lblChange.Text = "CHANGE: ₱" + change.ToString("N2");
+                    lblChange.ForeColor = Color.Green; // Success color
+                }
+            }
+            catch
+            {
+                lblChange.Text = "CHANGE: ₱0.00";
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             dataGridView1.Rows.Clear();
             lblGrandTotal.Text = "TOTAL: ₱0.00";
+            lblChange.Text = "CHANGE: ₱0.00"; // Reset change
+            txtCashReceived.Clear();           // Clear cash input
             txtScanInput.Focus();
         }
 
@@ -137,6 +176,21 @@ namespace Elective_Bautista
         private void label1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void CashierForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtCashReceived_TextChanged(object sender, EventArgs e)
+        {
+            CalculateChange();
         }
     }
 }
