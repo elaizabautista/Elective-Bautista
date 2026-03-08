@@ -23,7 +23,7 @@ namespace Elective_Bautista
             dataGridView1.Columns.Add("ProdName", "Item Name");
             dataGridView1.Columns.Add("ProdQty", "Qty");
             dataGridView1.Columns.Add("ProdPrice", "Price");
-            dataGridView1.Columns.Add("ProdSubtotal", "Subtotal"); // Index 3
+            dataGridView1.Columns.Add("ProdSubtotal", "Subtotal"); 
 
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
